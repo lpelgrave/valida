@@ -1,5 +1,6 @@
 # jQuery Valida 2.1.7
 
+Valida was created by Rogério Taques and I extended it to include a blur_filter option as many clients I was using this for wanted the filters to only appear on field blur. All credits to Rogério Taques for creating this awesome validation library that can easily be expanded on.
 Valida is a jQuery plugin which provides an easy, fast and lightweight way to make form validations on client-side.
 It's source-code (minified) has about *12Kb*.
 
