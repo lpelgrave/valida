@@ -21,9 +21,10 @@
 	* OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 	*
 	* @requires jQuery v1.9 or above
-	* @version 2.1.6
+	* @version 2.1.7
 	* @cat Plugins/Form Validation
 	* @author Rogério Taques (rogerio.taques@gmail.com)
+	* @author Luke Pelgrave
 	* @see https://github.com/rogeriotaques/valida
 	*
 	* Contributors:
@@ -51,7 +52,7 @@
 
 	"use strict";
 
-	var version = '2.1.6',
+	var version = '2.1.7',
 
 	// default options
 	defaults = {
@@ -82,7 +83,8 @@
 
 		// filters
 		use_filter: true,		// defines that filters will be validated
-
+		blur_filter: true,		// defines if the filter should only appear on field blur
+		
 		// callbacks
 		before_validate: null,	// callback which runs before default validation
 		after_validate: null	// callback which runs after default validation
@@ -222,15 +224,22 @@
 
 					el.on('blur.valida', function(e)
 					{
-						// required fields
-						if ( (el.is('select') && el.is('[required]') && (el.find('option').filter(':selected').val() === '' || !el.find('option').length)) ||
-						(el.is('textarea') && el.is('[required]') && el.val() === '') ||
-						(el.is('input') && el.prop('type') === 'checkbox' && el.is('[required]') && !el.is(':checked')) ||
-						(el.is('input') && el.prop('type') !== 'checkbox' && el.is('[required]') && el.val() === '') )
+						if(o.blur_filter && el.attr('filter') && el.val() !== '')
 						{
-							_show_error(el, el.is('[type=checkbox]'));
-
-						} // empty, unselected or unchecked fields
+						_typing_handler(el);
+						}
+						else
+						{
+							// required fields
+							if ( (el.is('select') && el.is('[required]') && (el.find('option').filter(':selected').val() === '' || !el.find('option').length)) ||
+							(el.is('textarea') && el.is('[required]') && el.val() === '') ||
+							(el.is('input') && el.prop('type') === 'checkbox' && el.is('[required]') && !el.is(':checked')) ||
+							(el.is('input') && el.prop('type') !== 'checkbox' && el.is('[required]') && el.val() === '') )
+							{
+								_show_error(el, el.is('[type=checkbox]'));
+	
+							} // empty, unselected or unchecked fields
+						}
 
 					}); // blur
 
@@ -286,17 +295,20 @@
 				else
 				{
 					// set handler for typing
-					el.on('keyup.valida', function(e)
-					{
-						if (el.val() !== '')
+					el.on('keyup.valida', function(e){
+						if (!o.blur_filter && el.val() !== '')
 						{
-							_typing_handler(el);
-						}
-
-					}).on('keydown.valida', function(e)
-					{
 						_typing_handler(el);
-
+						}
+					}).on('keydown.valida', function(e){
+						if (!o.blur_filter)
+						{
+						_typing_handler(el);
+						}
+						else
+						{
+						_clear(el);	
+						}
 					});
 				}
 
